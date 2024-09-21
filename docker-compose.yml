@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn social_network.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=social_network.settings
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgres://mahesh:Mahesh@123@db:5432/social_network
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: social_network
+      POSTGRES_USER: mahesh
+      POSTGRES_PASSWORD: Mahesh@123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+
+volumes:
+  postgres_data:
